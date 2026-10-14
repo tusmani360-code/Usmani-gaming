@@ -3,69 +3,339 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>USMANI Gaming</title>
 <style>
+:root {
+  --bg: #0b1220;
+  --card: #17263b;
+  --green: #35df91;
+  --text: #f4f7fb;
+  --muted: #aebbd0;
+}
+* { box-sizing: border-box; }
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
   font-family: Arial, sans-serif;
-  background: #101827;
-  color: white;
-  text-align: center;
 }
 header {
-  background: #172438;
-  padding: 24px 10px;
-  border-bottom: 2px solid #35df91;
+  text-align: center;
+  padding: 26px 14px;
+  background: #132139;
+  border-bottom: 2px solid var(--green);
 }
-h1 { color: #35df91; }
+header h1 { color: var(--green); margin: 0 0 8px; }
+header p { color: var(--muted); }
+main { max-width: 800px; margin: auto; padding: 14px; }
 .card {
-  background: #1d2b40;
-  margin: 20px;
-  padding: 22px;
+  background: var(--card);
+  padding: 18px;
   border-radius: 15px;
+  margin: 15px 0;
+  border: 1px solid #2b3d56;
+}
+h2 { margin-top: 0; }
+.muted { color: var(--muted); font-size: 14px; }
+.points { color: var(--green); font-size: 34px; font-weight: bold; }
+button, select, input {
+  font: inherit;
+  border-radius: 8px;
+  padding: 11px;
 }
 button {
-  padding: 12px 20px;
-  margin: 8px;
-  border: 0;
-  border-radius: 8px;
-  background: #35df91;
-  color: #101827;
+  border: none;
+  background: var(--green);
+  color: #08151a;
   font-weight: bold;
+  cursor: pointer;
+  margin: 4px;
 }
-#result { color: #35df91; }
+button:disabled { opacity: .45; cursor: default; }
+.secondary {
+  background: #31445e;
+  color: white;
+}
+.danger {
+  background: #6d3040;
+  color: white;
+}
+.match {
+  padding: 14px 0;
+  border-top: 1px solid #35445a;
+}
+.match:first-of-type { border-top: none; }
+.teams { font-size: 19px; font-weight: bold; margin: 12px 0; }
+select { background: #0b1220; color: white; border: 1px solid #52647b; max-width: 100%; }
+.badge { color: var(--green); font-size: 13px; }
+table { width: 100%; border-collapse: collapse; }
+td, th { text-align: left; padding: 10px 5px; border-bottom: 1px solid #35445a; }
+footer { text-align: center; color: var(--muted); padding: 20px; font-size: 12px; }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>USMANI GAMING</h1>
-  <p>Predict • Play • Earn Points</p>
+  <h1>🎮 USMANI GAMING</h1>
+  <p>Predict • Play • Collect Demo Points</p>
+  <span class="badge">FREE DEMO VERSION</span>
 </header>
 
-<div class="card">
-  <h2>🏆 Welcome to USMANI</h2>
-  <p>Free prediction game</p>
-  <h3>Demo Match</h3>
-  <p>Team A 🆚 Team B</p>
-  <button onclick="predict('Team A')">Team A</button>
-  <button onclick="predict('Team B')">Team B</button>
-  <p id="result">Choose your prediction!</p>
-</div>
+<main>
+  <section class="card">
+    <h2>⭐ Your Score</h2>
+    <div class="points" id="points">0</div>
+    <p class="muted">Demo points only. No money or cash prizes.</p>
+    <p id="stats">0 predictions made</p>
+  </section>
 
-<div class="card">
-  <h2>⭐ Your Demo Points</h2>
-  <h1 id="points">0</h1>
-  <p>Points only. No deposits or cash prizes.</p>
-</div>
+  <section class="card">
+    <h2>🏏 Demo Matches</h2>
+    <p class="muted">
+      Choose a team in each match. These are fictional demo matches,
+      not live sports fixtures.
+    </p>
+    <div id="matches"></div>
+    <button class="secondary" onclick="resetMatches()">Reset predictions</button>
+  </section>
+
+  <section class="card">
+    <h2>🏆 Local Leaderboard</h2>
+    <p class="muted">
+      This leaderboard is stored only on this browser and device.
+      It is not shared with other visitors.
+    </p>
+    <table>
+      <thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead>
+      <tbody id="leaderboard"></tbody>
+    </table>
+    <p class="muted">Add your own demo player name:</p>
+    <input id="playerName" maxlength="20" placeholder="Your name">
+    <button onclick="saveName()">Save name</button>
+  </section>
+
+  <section class="card">
+    <h2>ℹ️ How to play</h2>
+    <p>1. Choose a team for each demo match.</p>
+    <p>2. Press Submit Prediction.</p>
+    <p>3. Press Check Demo Results to simulate the results.</p>
+    <p>4. Correct predictions earn 10 demo points.</p>
+    <p class="muted">
+      Results are simulated and are not actual sports results.
+      Each match can score only once.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>⚙️ Demo Data</h2>
+    <button class="danger" onclick="clearData()">Clear all local demo data</button>
+    <p class="muted">
+      Clearing data removes your saved score and predictions
+      from this browser.
+    </p>
+  </section>
+</main>
+
+<footer>
+  USMANI Gaming · Practice and entertainment only · No real-money betting
+</footer>
 
 <script>
-let points = 0;
-function predict(team) {
-  document.getElementById("result").textContent =
-    "Your prediction: " + team;
+const games = [
+  { id: 1, a: "Lions", b: "Tigers" },
+  { id: 2, a: "Eagles", b: "Warriors" },
+  { id: 3, a: "Kings", b: "Stars" },
+  { id: 4, a: "Falcons", b: "Panthers" },
+  { id: 5, a: "Royals", b: "Champions" }
+];
+
+const KEY = "usmaniDemoV1";
+
+function freshState() {
+  return {
+    points: 0,
+    name: "Player",
+    predictions: {},
+    completed: {},
+    history: []
+  };
 }
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (!saved) return freshState();
+    const parsed = JSON.parse(saved);
+    return {
+      ...freshState(),
+      ...parsed,
+      predictions: parsed.predictions || {},
+      completed: parsed.completed || {},
+      history: parsed.history || []
+    };
+  } catch (e) {
+    return freshState();
+  }
+}
+
+let state = loadState();
+
+function saveState() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch (e) {
+    alert("Browser storage unavailable. Your changes may not persist.");
+  }
+  render();
+}
+
+function renderMatches() {
+  const container = document.getElementById("matches");
+  container.innerHTML = "";
+
+  games.forEach(game => {
+    const selected = state.predictions[game.id] || "";
+    const completed = Boolean(state.completed[game.id]);
+    const result = state.history.find(x => x.id === game.id);
+
+    const div = document.createElement("div");
+    div.className = "match";
+
+    const title = document.createElement("h3");
+    title.textContent = "Demo Match " + game.id;
+    div.appendChild(title);
+
+    const teams = document.createElement("div");
+    teams.className = "teams";
+    teams.textContent = game.a + " VS " + game.b;
+    div.appendChild(teams);
+
+    const select = document.createElement("select");
+    select.setAttribute("aria-label", "Prediction for match " + game.id);
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Choose your team";
+    select.appendChild(placeholder);
+
+    [game.a, game.b].forEach(team => {
+      const option = document.createElement("option");
+      option.value = team;
+      option.textContent = team;
+      select.appendChild(option);
+    });
+
+    select.value = selected;
+    select.disabled = completed;
+    select.addEventListener("change", () => {
+      state.predictions[game.id] = select.value;
+      saveState();
+    });
+    div.appendChild(select);
+
+    const submit = document.createElement("button");
+    submit.textContent = completed ? "Prediction locked" : "Submit Prediction";
+    submit.disabled = completed || !selected;
+    submit.addEventListener("click", () => {
+      if (!state.predictions[game.id]) return;
+      saveState();
+      alert("Prediction saved for " + game.a + " vs " + game.b);
+    });
+    div.appendChild(submit);
+
+    if (result) {
+      const info = document.createElement("p");
+      info.className = "muted";
+      info.textContent =
+        "Simulated winner: " + result.winner +
+        " · " + (result.correct ? "+10 points" : "0 points");
+      div.appendChild(info);
+    }
+    container.appendChild(div);
+  });
+
+  const resultsButton = document.createElement("button");
+  resultsButton.textContent = "Check Demo Results";
+  resultsButton.addEventListener("click", checkResults);
+  container.appendChild(resultsButton);
+}
+
+function checkResults() {
+  const pending = games.filter(g =>
+    state.predictions[g.id] && !state.completed[g.id]
+  );
+
+  if (!pending.length) {
+    alert("First choose and submit a prediction for an unfinished match.");
+    return;
+  }
+
+  if (!confirm("Generate simulated results for your submitted demo predictions? This cannot be undone for those matches.")) return;
+
+  pending.forEach(game => {
+    const winner = Math.random() < 0.5 ? game.a : game.b;
+    const correct = state.predictions[game.id] === winner;
+
+    state.completed[game.id] = true;
+    if (correct) state.points += 10;
+
+    state.history.push({
+      id: game.id,
+      winner,
+      correct
+    });
+  });
+
+  saveState();
+  alert("Demo results generated. Your score has been updated.");
+}
+
+function resetMatches() {
+  if (!confirm("Reset all match predictions and simulated results? Your total points will remain.")) return;
+  state.predictions = {};
+  state.completed = {};
+  state.history = [];
+  saveState();
+}
+
+function saveName() {
+  const input = document.getElementById("playerName");
+  const name = input.value.trim();
+  if (!name) {
+    alert("Please enter a player name.");
+    return;
+  }
+  state.name = name.slice(0, 20);
+  saveState();
+}
+
+function clearData() {
+  if (!confirm("Delete all locally saved demo data?")) return;
+  state = freshState();
+  saveState();
+}
+
+function render() {
+  document.getElementById("points").textContent = state.points;
+  document.getElementById("stats").textContent =
+    Object.keys(state.predictions).filter(id => state.predictions[id]).length +
+    " predictions made";
+  document.getElementById("playerName").value = state.name;
+  renderMatches();
+
+  const body = document.getElementById("leaderboard");
+  body.innerHTML = "";
+  const row = document.createElement("tr");
+  [ "1", state.name, String(state.points) ].forEach(value => {
+    const cell = document.createElement("td");
+    cell.textContent = value;
+    row.appendChild(cell);
+  });
+  body.appendChild(row);
+}
+
+render();
 </script>
 </body>
 </html>
-
