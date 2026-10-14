@@ -1,1 +1,71 @@
-index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USMANI Gaming</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101827;
+  color: white;
+  text-align: center;
+}
+header {
+  background: #172438;
+  padding: 24px 10px;
+  border-bottom: 2px solid #35df91;
+}
+h1 { color: #35df91; }
+.card {
+  background: #1d2b40;
+  margin: 20px;
+  padding: 22px;
+  border-radius: 15px;
+}
+button {
+  padding: 12px 20px;
+  margin: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #35df91;
+  color: #101827;
+  font-weight: bold;
+}
+#result { color: #35df91; }
+</style>
+</head>
+<body>
+<header>
+  <h1>USMANI GAMING</h1>
+  <p>Predict • Play • Earn Points</p>
+</header>
+
+<div class="card">
+  <h2>🏆 Welcome to USMANI</h2>
+  <p>Free prediction game</p>
+  <h3>Demo Match</h3>
+  <p>Team A 🆚 Team B</p>
+  <button onclick="predict('Team A')">Team A</button>
+  <button onclick="predict('Team B')">Team B</button>
+  <p id="result">Choose your prediction!</p>
+</div>
+
+<div class="card">
+  <h2>⭐ Your Demo Points</h2>
+  <h1 id="points">0</h1>
+  <p>Points only. No deposits or cash prizes.</p>
+</div>
+
+<script>
+let points = 0;
+function predict(team) {
+  document.getElementById("result").textContent =
+    "Your prediction: " + team;
+}
+</script>
+</body>
+</html>
+
